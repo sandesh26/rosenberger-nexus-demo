@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'rosenberger-nexus',
+      name: 'rosenberger',
       script: 'npm',
       args: 'run start',
       env: {
