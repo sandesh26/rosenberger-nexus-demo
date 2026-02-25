@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # deploy_pm2.sh — build + migrate + start with pm2
 # Usage: ./deploy_pm2.sh [PORT]
@@ -7,8 +7,8 @@ set -euo pipefail
 
 PORT=9002
 DATABASE_URL="mysql://root:mySQL%40123@localhost:3306/RosenbergerNexus"
-export DATABASE_URL
-export PORT
+# export DATABASE_URL
+# export PORT
 
 echo "Starting deploy for rosenberger-nexus on port $PORT"
 
