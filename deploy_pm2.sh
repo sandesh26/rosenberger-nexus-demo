@@ -1,42 +1,6 @@
 #!/usr/bin/env bash
-#set -euo pipefail
 
-# deploy_pm2.sh — build + migrate + start with pm2
-# Usage: ./deploy_pm2.sh [PORT]
-# Assumptions: node, npm, npx, pm2 and required global deps are already installed.
-
-PORT=9002
-DATABASE_URL="mysql://root:mySQL%40123@localhost:3306/RosenbergerNexus"
-# export DATABASE_URL
-# export PORT
-
-echo "Starting deploy for rosenberger-nexus on port $PORT"
-
-# Verify pm2
-if ! command -v pm2 >/dev/null 2>&1; then
-  echo "pm2 not found. Install globally: npm install -g pm2" >&2
-  exit 1
-fi
-
-# Ensure DATABASE_URL is set
-if [ -z "${DATABASE_URL:-}" ]; then
-  echo "ERROR: DATABASE_URL is not set. Export it before running this script." >&2
-  echo "Example: export DATABASE_URL='mysql://rn_user:strong_password@localhost:3306/rosenberger_nexus'" >&2
-  exit 1
-fi
-
-# Prisma: generate client
-echo "-> Running: npx prisma generate"
-npx prisma generate
-
-# Prisma: apply migrations (use deploy in production)
-echo "-> Running: npx prisma migrate deploy"
-npx prisma migrate deploy
-
-# Build Next.js
-#echo "-> Running: npm run build"
-#npm run build
-
+echo "Deployment started!"
 # Unzip Build Files
 unzip .next.zip
 
