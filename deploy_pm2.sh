@@ -5,7 +5,7 @@ set -euo pipefail
 # Usage: ./deploy_pm2.sh [PORT]
 # Assumptions: node, npm, npx, pm2 and required global deps are already installed.
 
-PORT=${1:-3000}
+PORT=9002
 export PORT
 
 echo "Starting deploy for rosenberger-nexus on port $PORT"
