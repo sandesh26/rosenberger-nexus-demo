@@ -6,6 +6,8 @@ set -euo pipefail
 # Assumptions: node, npm, npx, pm2 and required global deps are already installed.
 
 PORT=9002
+DATABASE_URL="mysql://root:mySQL%40123@localhost:3306/RosenbergerNexus"
+export DATABASE_URL
 export PORT
 
 echo "Starting deploy for rosenberger-nexus on port $PORT"
