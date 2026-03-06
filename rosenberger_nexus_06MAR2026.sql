@@ -104,7 +104,7 @@ CREATE TABLE `AppAccess` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `AppAccess_userId_key` (`userId`),
   CONSTRAINT `AppAccess_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,7 +113,7 @@ CREATE TABLE `AppAccess` (
 
 LOCK TABLES `AppAccess` WRITE;
 /*!40000 ALTER TABLE `AppAccess` DISABLE KEYS */;
-INSERT INTO `AppAccess` VALUES (1,1,1,0,0,'2026-02-24 10:17:01.818','2026-02-24 10:24:19.820'),(2,2,1,0,0,'2026-02-24 10:17:09.476','2026-02-24 10:17:09.476'),(3,3,1,0,0,'2026-02-24 10:17:10.450','2026-02-24 10:17:10.845'),(4,4,0,0,0,'2026-02-24 15:47:34.346','2026-02-24 15:47:34.346'),(5,5,0,0,0,'2026-02-24 15:48:04.557','2026-02-24 15:48:04.557');
+INSERT INTO `AppAccess` VALUES (1,1,1,0,0,'2026-02-24 10:17:01.818','2026-02-24 10:24:19.820'),(2,2,1,0,0,'2026-02-24 10:17:09.476','2026-03-04 06:41:07.879'),(3,3,1,0,0,'2026-02-24 10:17:10.450','2026-02-24 10:17:10.845'),(4,4,1,0,0,'2026-02-24 15:47:34.346','2026-02-27 10:45:32.331'),(5,5,0,0,0,'2026-02-24 15:48:04.557','2026-02-24 15:48:04.557'),(6,6,1,0,0,'2026-02-27 10:39:08.152','2026-02-27 10:40:33.539');
 /*!40000 ALTER TABLE `AppAccess` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,17 +127,21 @@ DROP TABLE IF EXISTS `Area`;
 CREATE TABLE `Area` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `leaderId` int DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `status` enum('ENABLED','DISABLED') COLLATE utf8mb4_unicode_ci DEFAULT 'ENABLED',
+  `departmentId` int DEFAULT NULL,
+  `locationId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Area_name_key` (`name`),
   KEY `Area_name_idx` (`name`),
   KEY `Area_leaderId_fkey` (`leaderId`),
-  CONSTRAINT `Area_leaderId_fkey` FOREIGN KEY (`leaderId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `Area_departmentId_fkey` (`departmentId`),
+  KEY `Area_locationId_fkey` (`locationId`),
+  CONSTRAINT `Area_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Area_leaderId_fkey` FOREIGN KEY (`leaderId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Area_locationId_fkey` FOREIGN KEY (`locationId`) REFERENCES `Location` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,6 +150,7 @@ CREATE TABLE `Area` (
 
 LOCK TABLES `Area` WRITE;
 /*!40000 ALTER TABLE `Area` DISABLE KEYS */;
+INSERT INTO `Area` VALUES (1,'A1',NULL,'2026-03-02 18:20:24.651','ENABLED',NULL,NULL),(2,'A2',3,'2026-03-02 18:26:07.208','ENABLED',NULL,2),(3,'A3',NULL,'2026-03-03 05:17:03.665','ENABLED',NULL,NULL),(4,'A4',7,'2026-03-03 06:50:42.133','ENABLED',21,2);
 /*!40000 ALTER TABLE `Area` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,6 +177,7 @@ CREATE TABLE `Audit` (
   `businessUnit` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `auditFrequency` enum('ONE_TIME','WEEKLY','MONTHLY','QUARTERLY','HALF_YEARLY','YEARLY') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ONE_TIME',
   `departmentId` int DEFAULT NULL,
+  `questionType` enum('TEXT','MCQ','MULTI_ANSWER') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'MCQ',
   PRIMARY KEY (`id`),
   KEY `Audit_status_idx` (`status`),
   KEY `Audit_createdAt_idx` (`createdAt`),
@@ -181,7 +187,7 @@ CREATE TABLE `Audit` (
   CONSTRAINT `Audit_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Audit_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Audit_templateId_fkey` FOREIGN KEY (`templateId`) REFERENCES `AuditTemplate` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +196,7 @@ CREATE TABLE `Audit` (
 
 LOCK TABLES `Audit` WRITE;
 /*!40000 ALTER TABLE `Audit` DISABLE KEYS */;
-INSERT INTO `Audit` VALUES (8,'Security Audit Title - Testing 1','Test description for Security Audit','OPEN',NULL,1,'2026-01-01 13:29:31.890','2026-01-10 00:00:00.000','2026-01-01',NULL,NULL,'5S Zone Audit','Interconnect','ONE_TIME',NULL),(9,'New Audit Creation Testing','New Audit Creation Testing Description','OPEN',NULL,3,'2026-01-02 11:17:59.648',NULL,'2026-01-05',NULL,'MONDAY','5S Zone Audit','Interconnect','WEEKLY',NULL);
+INSERT INTO `Audit` VALUES (8,'Security Audit Title - Testing 1','Test description for Security Audit','OPEN',NULL,1,'2026-01-01 13:29:31.890','2026-01-10 00:00:00.000','2026-01-01',NULL,NULL,'5S Zone Audit','Interconnect','ONE_TIME',NULL,'MCQ'),(9,'New Audit Creation Testing','New Audit Creation Testing Description','OPEN',NULL,3,'2026-01-02 11:17:59.648',NULL,'2026-01-05',NULL,'MONDAY','5S Zone Audit','Interconnect','WEEKLY',NULL,'MCQ');
 /*!40000 ALTER TABLE `Audit` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +222,7 @@ CREATE TABLE `AuditAssignment` (
   KEY `AuditAssignment_rotationRunId_fkey` (`rotationRunId`),
   CONSTRAINT `AuditAssignment_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `AuditAssignment_rotationRunId_fkey` FOREIGN KEY (`rotationRunId`) REFERENCES `RotationRun` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +231,7 @@ CREATE TABLE `AuditAssignment` (
 
 LOCK TABLES `AuditAssignment` WRITE;
 /*!40000 ALTER TABLE `AuditAssignment` DISABLE KEYS */;
-INSERT INTO `AuditAssignment` VALUES (2,8,2,51,NULL,NULL,'2026-01-02 11:13:50.761','PENDING',0),(5,9,3,56,NULL,NULL,'2026-01-02 11:18:31.165','PENDING',0),(8,8,1,52,NULL,NULL,'2026-01-19 14:56:59.989','PENDING',0),(9,8,3,53,NULL,NULL,'2026-01-19 14:56:59.994','PENDING',0),(10,9,2,54,NULL,NULL,'2026-01-30 21:33:07.823','COMPLETED',0),(11,9,1,55,NULL,NULL,'2026-01-30 21:33:07.832','PENDING',0);
+INSERT INTO `AuditAssignment` VALUES (2,8,2,51,NULL,NULL,'2026-01-02 11:13:50.761','COMPLETED',0),(5,9,3,56,NULL,NULL,'2026-01-02 11:18:31.165','PENDING',0),(10,9,2,54,NULL,NULL,'2026-01-30 21:33:07.823','COMPLETED',0),(11,9,1,55,NULL,NULL,'2026-01-30 21:33:07.832','PENDING',0),(12,8,4,52,NULL,NULL,'2026-03-06 06:39:53.180','PENDING',0),(13,8,6,53,NULL,NULL,'2026-03-06 06:39:53.206','COMPLETED',0);
 /*!40000 ALTER TABLE `AuditAssignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -334,6 +340,52 @@ LOCK TABLES `AuditHistory` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `AuditPendingItem`
+--
+
+DROP TABLE IF EXISTS `AuditPendingItem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `AuditPendingItem` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `auditId` int DEFAULT NULL,
+  `questionId` int NOT NULL,
+  `selectedOptionId` int DEFAULT NULL,
+  `selectedOptionText` longtext COLLATE utf8mb4_unicode_ci,
+  `selectedScore` double DEFAULT NULL,
+  `maxScore` double DEFAULT NULL,
+  `reporterId` int DEFAULT NULL,
+  `assigneeId` int DEFAULT NULL,
+  `status` enum('PENDING','OPEN','RESOLVED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `comments` longtext COLLATE utf8mb4_unicode_ci,
+  `resolvedAt` datetime(3) DEFAULT NULL,
+  `resolvedById` int DEFAULT NULL,
+  `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  KEY `AuditPendingItem_questionId_idx` (`questionId`),
+  KEY `AuditPendingItem_auditId_idx` (`auditId`),
+  KEY `AuditPendingItem_reporterId_fkey` (`reporterId`),
+  KEY `AuditPendingItem_assigneeId_fkey` (`assigneeId`),
+  KEY `AuditPendingItem_resolvedById_fkey` (`resolvedById`),
+  CONSTRAINT `AuditPendingItem_assigneeId_fkey` FOREIGN KEY (`assigneeId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `AuditPendingItem_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `AuditPendingItem_questionId_fkey` FOREIGN KEY (`questionId`) REFERENCES `AuditQuestion` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `AuditPendingItem_reporterId_fkey` FOREIGN KEY (`reporterId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `AuditPendingItem_resolvedById_fkey` FOREIGN KEY (`resolvedById`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AuditPendingItem`
+--
+
+LOCK TABLES `AuditPendingItem` WRITE;
+/*!40000 ALTER TABLE `AuditPendingItem` DISABLE KEYS */;
+INSERT INTO `AuditPendingItem` VALUES (1,8,18,55,'No',0,5,6,NULL,'PENDING',NULL,NULL,NULL,'2026-03-06 07:12:37.866'),(2,9,30,NULL,'Test Observation',NULL,NULL,2,NULL,'PENDING','Pending review for text response',NULL,NULL,'2026-03-06 10:47:31.964'),(3,9,21,63,'Major',0,5,2,NULL,'PENDING',NULL,NULL,NULL,'2026-03-06 10:47:33.397');
+/*!40000 ALTER TABLE `AuditPendingItem` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `AuditQuestion`
 --
 
@@ -344,7 +396,7 @@ CREATE TABLE `AuditQuestion` (
   `id` int NOT NULL AUTO_INCREMENT,
   `text` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `category` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `questionType` enum('TEXT','MCQ','MULTI_ANSWER') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'TEXT',
+  `questionType` enum('TEXT','MCQ','MULTI_ANSWER') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'MCQ',
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `language` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` enum('ENABLED','DISABLED') COLLATE utf8mb4_unicode_ci DEFAULT 'ENABLED',
@@ -352,7 +404,7 @@ CREATE TABLE `AuditQuestion` (
   PRIMARY KEY (`id`),
   KEY `AuditQuestion_departmentId_fkey` (`departmentId`),
   CONSTRAINT `AuditQuestion_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -361,7 +413,7 @@ CREATE TABLE `AuditQuestion` (
 
 LOCK TABLES `AuditQuestion` WRITE;
 /*!40000 ALTER TABLE `AuditQuestion` DISABLE KEYS */;
-INSERT INTO `AuditQuestion` VALUES (1,'Question 1 Text','Category 1','TEXT','2025-12-31 06:46:05.443','EN','ENABLED',NULL),(2,'Question 2 Text','Category 2','TEXT','2025-12-31 11:46:36.219','EN','ENABLED',NULL),(3,'New Question Addition Testing','Test Category','TEXT','2026-01-02 11:19:44.163','EN','ENABLED',NULL),(4,'Is the material kept as per 5S marking standards? Are there red tags for defective & name tags for used/unused material/ equipment?','1','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(5,'Are unidentified/unmarked material above tables/cupboards / racks or in storage area?','1','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(6,'Are walkways, emergency exits,fire extinguishers/ Gangways & panels free of clutter or obstruction?','1','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(7,'Are all the documents/calibration/PM in the zone up to date?','1','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(8,'Are finished or blocked parts like bins,tools, equipment, fixtures, trolleys, etc in the marked/ designated areas? (NO equipment/ tools/ fixtures to be on the floor/ unmarked area after use).','2','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(9,'Are all service lines & cables routed safely and organized to prevent hazards like leaks, damage, or tripping?','2','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(10,'Are the raw materials, semi-finished products and finished products in orderly and marked containers and on marked areas and on palletes?','2','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(11,'Do the shift supervisors/group leaders have an overview of the processing status of the daily orders?','2','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(12,'Are the materials in storage racks and cupboards systematically arranged and easy to reach out & with a list of material displayed on it? (Open the cupboards and check)','3','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(13,'i) Are all safety devices clearly visible and in proper condition? (e.g. emergency stop switch, fire alarm call point, fire extinguisher...) \r\nii)Are cleaning supplies have a designated place?','3','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(14,'Is the floor free of any contamination, dust, garbage (oil, water, chemicals, paper, etc.)? Is the floor cleaned in that particular shift?','3','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(15,'Are the tables, measuring equipment, machines and tools & fixtures clean and free of dust?','3','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(16,'Are standard format follwoed for all the labels across the work area?','4','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(17,'Have all employees been trained in the 5S method and is the method practiced by everyone?','4','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(18,'Is there a checklist or schedule for routine tasks like cleaning and organizing?','4','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(19,'Are the machine/fixtures/material)used in the zone have assigned asset ID?','4','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(20,'Are audit closures of previous audit sustained currently?','5','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(21,'Are there any deviations from last audit observed?(Check closure rate consistency)','5','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(22,'Are  SQD goals in this zone known by employees and is it discussed during daily meetings?','5','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(23,'Are small improvements visibly implemented and communicated to the team','5','TEXT','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(24,'Test Question 3','Test Category','TEXT','2026-01-15 18:49:00.651','EN','ENABLED',NULL),(25,'Test Question New','New Category','TEXT','2026-01-30 19:51:01.749','EN','ENABLED',14),(26,'Want to answer the new question?','1','TEXT','2026-01-30 19:59:37.910','EN','ENABLED',1);
+INSERT INTO `AuditQuestion` VALUES (1,'Question 1 Text','Category 1','MCQ','2025-12-31 06:46:05.443','EN','ENABLED',NULL),(2,'Question 2 Text','Category 2','MCQ','2025-12-31 11:46:36.219','EN','ENABLED',NULL),(3,'New Question Addition Testing','Test Category','MCQ','2026-01-02 11:19:44.163','EN','ENABLED',NULL),(4,'Is the material kept as per 5S marking standards? Are there red tags for defective & name tags for used/unused material/ equipment?','1','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(5,'Are unidentified/unmarked material above tables/cupboards / racks or in storage area?','1','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(6,'Are walkways, emergency exits,fire extinguishers/ Gangways & panels free of clutter or obstruction?','1','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(7,'Are all the documents/calibration/PM in the zone up to date?','1','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(8,'Are finished or blocked parts like bins,tools, equipment, fixtures, trolleys, etc in the marked/ designated areas? (NO equipment/ tools/ fixtures to be on the floor/ unmarked area after use).','2','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(9,'Are all service lines & cables routed safely and organized to prevent hazards like leaks, damage, or tripping?','2','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(10,'Are the raw materials, semi-finished products and finished products in orderly and marked containers and on marked areas and on palletes?','2','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(11,'Do the shift supervisors/group leaders have an overview of the processing status of the daily orders?','2','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(12,'Are the materials in storage racks and cupboards systematically arranged and easy to reach out & with a list of material displayed on it? (Open the cupboards and check)','3','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(13,'i) Are all safety devices clearly visible and in proper condition? (e.g. emergency stop switch, fire alarm call point, fire extinguisher...) \r\nii)Are cleaning supplies have a designated place?','3','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(14,'Is the floor free of any contamination, dust, garbage (oil, water, chemicals, paper, etc.)? Is the floor cleaned in that particular shift?','3','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(15,'Are the tables, measuring equipment, machines and tools & fixtures clean and free of dust?','3','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(16,'Are standard format follwoed for all the labels across the work area?','4','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(17,'Have all employees been trained in the 5S method and is the method practiced by everyone?','4','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(18,'Is there a checklist or schedule for routine tasks like cleaning and organizing?','4','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(19,'Are the machine/fixtures/material)used in the zone have assigned asset ID?','4','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(20,'Are audit closures of previous audit sustained currently?','5','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(21,'Are there any deviations from last audit observed?(Check closure rate consistency)','5','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(22,'Are  SQD goals in this zone known by employees and is it discussed during daily meetings?','5','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(23,'Are small improvements visibly implemented and communicated to the team','5','MCQ','2026-01-15 14:13:44.584','EN','ENABLED',NULL),(24,'Test Question 3','Test Category','MCQ','2026-01-15 18:49:00.651','EN','ENABLED',NULL),(25,'Test Question New','New Category','MCQ','2026-01-30 19:51:01.749','EN','ENABLED',14),(26,'Want to answer the new question?','1','MCQ','2026-01-30 19:59:37.910','EN','ENABLED',1),(27,'Test MCQ QUestion',NULL,'MCQ','2026-03-05 20:23:02.910','EN','ENABLED',21),(28,'Text Question Test?',NULL,'TEXT','2026-03-05 20:23:26.082','EN','ENABLED',21),(29,'MCQ Test Question latest',NULL,'MCQ','2026-03-05 20:44:55.121','EN','ENABLED',NULL),(30,'Text Question Test Latest',NULL,'TEXT','2026-03-05 20:45:07.984','EN','ENABLED',NULL);
 /*!40000 ALTER TABLE `AuditQuestion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,7 +440,7 @@ CREATE TABLE `AuditQuestionAssignment` (
   CONSTRAINT `AuditQuestionAssignment_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `AuditQuestionAssignment_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `AuditQuestionAssignment_questionId_fkey` FOREIGN KEY (`questionId`) REFERENCES `AuditQuestion` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -397,7 +449,7 @@ CREATE TABLE `AuditQuestionAssignment` (
 
 LOCK TABLES `AuditQuestionAssignment` WRITE;
 /*!40000 ALTER TABLE `AuditQuestionAssignment` DISABLE KEYS */;
-INSERT INTO `AuditQuestionAssignment` VALUES (16,8,1,NULL,0,NULL,'2026-01-01 19:43:42.301'),(18,8,2,NULL,1,1,'2026-01-02 06:58:24.901'),(32,9,19,54,0,3,'2026-01-30 19:14:53.211'),(33,9,20,54,1,3,'2026-01-30 19:14:53.236'),(34,9,21,54,2,3,'2026-01-30 19:14:53.244'),(35,9,3,55,0,3,'2026-01-30 19:14:53.249'),(36,9,23,55,1,3,'2026-01-30 19:14:53.257'),(37,9,24,56,0,3,'2026-01-30 19:14:53.267');
+INSERT INTO `AuditQuestionAssignment` VALUES (32,9,19,54,0,3,'2026-01-30 19:14:53.211'),(33,9,20,54,1,3,'2026-01-30 19:14:53.236'),(34,9,21,54,2,3,'2026-01-30 19:14:53.244'),(35,9,3,55,0,3,'2026-01-30 19:14:53.249'),(36,9,23,55,1,3,'2026-01-30 19:14:53.257'),(37,9,24,56,0,3,'2026-01-30 19:14:53.267'),(38,8,27,51,0,1,'2026-03-05 20:26:34.326'),(39,8,28,51,1,1,'2026-03-05 20:26:34.340'),(40,8,29,51,2,1,'2026-03-05 20:45:35.969'),(41,8,30,51,3,1,'2026-03-05 20:45:35.974'),(42,8,26,52,1,1,'2026-03-06 06:25:40.385'),(43,8,25,52,0,1,'2026-03-06 06:25:40.391'),(44,8,18,53,1,1,'2026-03-06 06:25:40.393'),(45,8,17,53,0,1,'2026-03-06 06:25:40.394'),(46,9,30,54,4,1,'2026-03-06 10:43:06.264'),(47,9,28,54,3,1,'2026-03-06 10:43:06.321');
 /*!40000 ALTER TABLE `AuditQuestionAssignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -421,7 +473,7 @@ CREATE TABLE `AuditQuestionOptions` (
   UNIQUE KEY `AuditQuestionOptions_questionId_order_key` (`questionId`,`order`),
   KEY `AuditQuestionOptions_questionId_idx` (`questionId`),
   CONSTRAINT `AuditQuestionOptions_questionId_fkey` FOREIGN KEY (`questionId`) REFERENCES `AuditQuestion` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -430,7 +482,7 @@ CREATE TABLE `AuditQuestionOptions` (
 
 LOCK TABLES `AuditQuestionOptions` WRITE;
 /*!40000 ALTER TABLE `AuditQuestionOptions` DISABLE KEYS */;
-INSERT INTO `AuditQuestionOptions` VALUES (13,2,'Option 1',0,0,0,'2026-01-01 19:42:01.096','2026-01-01 19:42:01.096'),(14,2,'Option 2',1,0,1,'2026-01-01 19:42:01.096','2026-01-01 19:42:01.096'),(15,1,'Option 1',0,0,0,'2026-01-01 19:42:16.169','2026-01-01 19:42:16.169'),(16,1,'Option 2',1,0,1,'2026-01-01 19:42:16.169','2026-01-01 19:42:16.169'),(17,3,'Option 1 ',2,0,0,'2026-01-02 11:19:44.163','2026-01-02 11:19:44.163'),(18,3,'Option 2',5,0,1,'2026-01-02 11:19:44.163','2026-01-02 11:19:44.163'),(19,4,'Followed',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(20,4,'Partially Followed',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(21,4,'Not followed',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(22,5,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(23,5,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(24,6,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(25,6,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(26,7,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(27,7,'Maintained but w/o dates or rev',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(28,7,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(29,8,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(30,8,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(31,9,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(32,9,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(33,10,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(34,10,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(35,11,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(36,11,'Partly',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(37,11,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(38,12,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(39,12,'Systematically arranged but w/o list',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(40,12,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(41,13,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(42,13,'Only i) is maintained',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(43,13,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(44,14,'Very Clean',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(45,14,'Some spots on the floor',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(46,14,'Dirty',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(47,15,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(48,15,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(49,16,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(50,16,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(51,17,'Fully practised',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(52,17,'Partially practised',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(53,17,'Not practised',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(54,18,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(55,18,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(56,19,'Assigned ID\'s available',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(57,19,'ID\'s unavailable for some items',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(58,19,'No assigned ID\'s',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(59,20,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(60,20,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(61,21,'No Deviation',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(62,21,'Minor',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(63,21,'Major',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(64,22,'Known and followed by all',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(65,22,'Known but not followed',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(66,22,'Not known',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(67,23,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(68,23,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(69,24,'Option 1',0,0,0,'2026-01-15 18:49:00.651','2026-01-15 18:49:00.651'),(70,24,'Option 2',1,0,1,'2026-01-15 18:49:00.651','2026-01-15 18:49:00.651'),(71,25,'Option 1',0,0,0,'2026-01-30 19:51:01.749','2026-01-30 19:51:01.749'),(72,25,'Option 2',1,0,1,'2026-01-30 19:51:01.749','2026-01-30 19:51:01.749'),(73,26,'Followed',5,0,0,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910'),(74,26,'Partially Followed',3,0,1,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910'),(75,26,'Not followed',0,0,2,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910');
+INSERT INTO `AuditQuestionOptions` VALUES (13,2,'Option 1',0,0,0,'2026-01-01 19:42:01.096','2026-01-01 19:42:01.096'),(14,2,'Option 2',1,0,1,'2026-01-01 19:42:01.096','2026-01-01 19:42:01.096'),(15,1,'Option 1',0,0,0,'2026-01-01 19:42:16.169','2026-01-01 19:42:16.169'),(16,1,'Option 2',1,0,1,'2026-01-01 19:42:16.169','2026-01-01 19:42:16.169'),(17,3,'Option 1 ',2,0,0,'2026-01-02 11:19:44.163','2026-01-02 11:19:44.163'),(18,3,'Option 2',5,0,1,'2026-01-02 11:19:44.163','2026-01-02 11:19:44.163'),(19,4,'Followed',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(20,4,'Partially Followed',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(21,4,'Not followed',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(22,5,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(23,5,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(24,6,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(25,6,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(26,7,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(27,7,'Maintained but w/o dates or rev',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(28,7,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(29,8,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(30,8,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(31,9,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(32,9,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(33,10,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(34,10,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(35,11,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(36,11,'Partly',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(37,11,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(38,12,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(39,12,'Systematically arranged but w/o list',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(40,12,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(41,13,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(42,13,'Only i) is maintained',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(43,13,'No',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(44,14,'Very Clean',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(45,14,'Some spots on the floor',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(46,14,'Dirty',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(47,15,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(48,15,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(49,16,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(50,16,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(51,17,'Fully practised',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(52,17,'Partially practised',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(53,17,'Not practised',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(54,18,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(55,18,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(56,19,'Assigned ID\'s available',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(57,19,'ID\'s unavailable for some items',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(58,19,'No assigned ID\'s',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(59,20,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(60,20,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(61,21,'No Deviation',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(62,21,'Minor',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(63,21,'Major',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(64,22,'Known and followed by all',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(65,22,'Known but not followed',3,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(66,22,'Not known',0,0,2,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(67,23,'Yes',5,0,0,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(68,23,'No',0,0,1,'2026-01-15 14:13:44.584','2026-01-15 14:13:44.584'),(69,24,'Option 1',0,0,0,'2026-01-15 18:49:00.651','2026-01-15 18:49:00.651'),(70,24,'Option 2',1,0,1,'2026-01-15 18:49:00.651','2026-01-15 18:49:00.651'),(71,25,'Option 1',0,0,0,'2026-01-30 19:51:01.749','2026-01-30 19:51:01.749'),(72,25,'Option 2',1,0,1,'2026-01-30 19:51:01.749','2026-01-30 19:51:01.749'),(73,26,'Followed',5,0,0,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910'),(74,26,'Partially Followed',3,0,1,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910'),(75,26,'Not followed',0,0,2,'2026-01-30 19:59:37.910','2026-01-30 19:59:37.910'),(76,27,'Option 1 Test',0,0,0,'2026-03-05 20:23:02.910','2026-03-05 20:23:02.910'),(77,27,'Option 2 Test',1,0,1,'2026-03-05 20:23:02.910','2026-03-05 20:23:02.910'),(78,29,'One',0,0,0,'2026-03-05 20:44:55.121','2026-03-05 20:44:55.121'),(79,29,'Two',1,0,1,'2026-03-05 20:44:55.121','2026-03-05 20:44:55.121');
 /*!40000 ALTER TABLE `AuditQuestionOptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -450,12 +502,15 @@ CREATE TABLE `AuditResponse` (
   `score` double DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt` datetime(3) NOT NULL,
+  `userId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `AuditResponse_auditId_questionId_key` (`auditId`,`questionId`),
   KEY `AuditResponse_questionId_fkey` (`questionId`),
+  KEY `AuditResponse_userId_idx` (`userId`),
   CONSTRAINT `AuditResponse_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `AuditResponse_questionId_fkey` FOREIGN KEY (`questionId`) REFERENCES `AuditQuestion` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `AuditResponse_questionId_fkey` FOREIGN KEY (`questionId`) REFERENCES `AuditQuestion` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `AuditResponse_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -464,7 +519,7 @@ CREATE TABLE `AuditResponse` (
 
 LOCK TABLES `AuditResponse` WRITE;
 /*!40000 ALTER TABLE `AuditResponse` DISABLE KEYS */;
-INSERT INTO `AuditResponse` VALUES (7,9,22,'41',NULL,NULL,'2026-01-20 13:17:11.643','2026-01-20 13:17:11.643'),(8,9,23,'19',NULL,NULL,'2026-01-20 13:17:11.743','2026-01-20 13:17:11.743'),(9,9,24,'22',NULL,NULL,'2026-01-20 13:17:11.778','2026-01-20 13:17:11.778');
+INSERT INTO `AuditResponse` VALUES (42,8,30,'Text Observation Latest',NULL,NULL,'2026-03-06 06:42:01.871','2026-03-06 06:42:01.871',2),(43,8,28,'Text observation',NULL,NULL,'2026-03-06 06:42:01.867','2026-03-06 06:42:01.867',2),(44,8,27,NULL,'76',0,'2026-03-06 06:42:02.295','2026-03-06 06:42:02.295',2),(45,8,29,NULL,'79',1,'2026-03-06 06:42:02.313','2026-03-06 06:42:02.313',2),(46,8,17,NULL,'51',5,'2026-03-06 07:12:37.866','2026-03-06 07:12:37.866',6),(47,8,18,NULL,'55',0,'2026-03-06 07:12:37.916','2026-03-06 07:12:37.916',6),(48,9,19,NULL,'56',5,'2026-03-06 10:47:33.389','2026-03-06 10:47:33.389',2),(49,9,20,NULL,'59',5,'2026-03-06 10:47:33.391','2026-03-06 10:47:33.391',2),(50,9,30,'Test Observation',NULL,NULL,'2026-03-06 10:47:33.378','2026-03-06 10:47:33.378',2),(51,9,21,NULL,'63',0,'2026-03-06 10:47:33.419','2026-03-06 10:47:33.419',2);
 /*!40000 ALTER TABLE `AuditResponse` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -512,7 +567,7 @@ CREATE TABLE `AuditScore` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `AuditScore_auditId_key` (`auditId`),
   CONSTRAINT `AuditScore_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -521,7 +576,7 @@ CREATE TABLE `AuditScore` (
 
 LOCK TABLES `AuditScore` WRITE;
 /*!40000 ALTER TABLE `AuditScore` DISABLE KEYS */;
-INSERT INTO `AuditScore` VALUES (1,9,0,26,'2026-01-31 04:01:39.832');
+INSERT INTO `AuditScore` VALUES (12,8,0,18,'2026-03-06 07:12:38.037'),(13,9,0,26,'2026-03-06 10:47:34.206');
 /*!40000 ALTER TABLE `AuditScore` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -599,7 +654,7 @@ CREATE TABLE `BusinessUnit` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `BusinessUnit_name_key` (`name`),
   KEY `BusinessUnit_name_idx` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -622,16 +677,21 @@ DROP TABLE IF EXISTS `Department`;
 CREATE TABLE `Department` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `deptHeadId` int DEFAULT NULL,
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `status` enum('ENABLED','DISABLED') COLLATE utf8mb4_unicode_ci DEFAULT 'ENABLED',
+  `businessUnitId` int DEFAULT NULL,
+  `locationId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Department_name_key` (`name`),
   KEY `Department_name_idx` (`name`),
   KEY `Department_deptHeadId_fkey` (`deptHeadId`),
-  CONSTRAINT `Department_deptHeadId_fkey` FOREIGN KEY (`deptHeadId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `Department_businessUnitId_fkey` (`businessUnitId`),
+  KEY `Department_locationId_fkey` (`locationId`),
+  CONSTRAINT `Department_businessUnitId_fkey` FOREIGN KEY (`businessUnitId`) REFERENCES `BusinessUnit` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Department_deptHeadId_fkey` FOREIGN KEY (`deptHeadId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Department_locationId_fkey` FOREIGN KEY (`locationId`) REFERENCES `Location` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -640,8 +700,39 @@ CREATE TABLE `Department` (
 
 LOCK TABLES `Department` WRITE;
 /*!40000 ALTER TABLE `Department` DISABLE KEYS */;
-INSERT INTO `Department` VALUES (1,'Production','Verna',NULL,'2026-01-25 22:04:41.954','ENABLED'),(2,'Planning','Verna',NULL,'2026-01-26 16:54:34.972','ENABLED'),(3,'Process','Verna',NULL,'2026-01-26 16:55:58.008','ENABLED'),(4,'Quality','Verna',NULL,'2026-01-26 16:55:58.016','ENABLED'),(5,'Admin','Verna',NULL,'2026-01-26 16:55:58.022','ENABLED'),(6,'Store','Verna',NULL,'2026-01-26 16:55:58.024','ENABLED'),(7,'Purchase','Verna',NULL,'2026-01-26 16:55:58.025','ENABLED'),(8,'Sales','Verna',NULL,'2026-01-26 16:55:58.027','ENABLED'),(9,'Maintenance','Verna',NULL,'2026-01-26 16:55:58.028','ENABLED'),(10,'Incoming Quality','Verna',NULL,'2026-01-26 16:55:58.030','ENABLED'),(11,'Supplier Quality','Verna',NULL,'2026-01-26 16:55:58.030','ENABLED'),(12,'Sourcing','Verna',NULL,'2026-01-26 16:55:58.031','ENABLED'),(13,'IT','Verna',NULL,'2026-01-26 16:55:58.033','ENABLED'),(14,'New Department',NULL,NULL,'2026-01-30 19:51:01.749','ENABLED');
+INSERT INTO `Department` VALUES (1,'Production',NULL,'2026-01-25 22:04:41.954','ENABLED',NULL,NULL),(2,'Planning',NULL,'2026-01-26 16:54:34.972','ENABLED',NULL,NULL),(3,'Process',NULL,'2026-01-26 16:55:58.008','ENABLED',NULL,NULL),(4,'Quality',NULL,'2026-01-26 16:55:58.016','ENABLED',NULL,NULL),(5,'Admin',NULL,'2026-01-26 16:55:58.022','ENABLED',NULL,NULL),(6,'Store',NULL,'2026-01-26 16:55:58.024','ENABLED',NULL,NULL),(7,'Purchase',NULL,'2026-01-26 16:55:58.025','ENABLED',NULL,NULL),(8,'Sales',NULL,'2026-01-26 16:55:58.027','ENABLED',NULL,NULL),(9,'Maintenance',NULL,'2026-01-26 16:55:58.028','ENABLED',NULL,NULL),(10,'Incoming Quality',NULL,'2026-01-26 16:55:58.030','ENABLED',NULL,NULL),(11,'Supplier Quality',NULL,'2026-01-26 16:55:58.030','ENABLED',NULL,NULL),(12,'Sourcing',NULL,'2026-01-26 16:55:58.031','ENABLED',NULL,NULL),(13,'IT',NULL,'2026-01-26 16:55:58.033','ENABLED',NULL,NULL),(14,'New Department',NULL,'2026-01-30 19:51:01.749','ENABLED',NULL,NULL),(15,'Test Deparment',4,'2026-03-02 18:07:16.212','ENABLED',NULL,2),(16,'Test Department 2',3,'2026-03-02 18:10:10.037','ENABLED',NULL,2),(17,'Test Department 3',4,'2026-03-02 18:14:02.210','ENABLED',NULL,2),(18,'Test Department 4',NULL,'2026-03-02 18:54:45.886','ENABLED',NULL,NULL),(19,'Test Department 5',NULL,'2026-03-03 05:15:49.103','ENABLED',NULL,NULL),(20,'Department 6',NULL,'2026-03-03 05:23:35.747','ENABLED',NULL,NULL),(21,'Department 7',6,'2026-03-03 05:23:47.158','ENABLED',2,2);
 /*!40000 ALTER TABLE `Department` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Location`
+--
+
+DROP TABLE IF EXISTS `Location`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Location` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `state` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `city` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pincode` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('ENABLED','DISABLED') COLLATE utf8mb4_unicode_ci DEFAULT 'ENABLED',
+  `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  KEY `Location_name_idx` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Location`
+--
+
+LOCK TABLES `Location` WRITE;
+/*!40000 ALTER TABLE `Location` DISABLE KEYS */;
+INSERT INTO `Location` VALUES (1,'Verna Factory','Verna, Goa','Goa','Verna','','ENABLED','2026-03-02 17:39:57.044'),(2,'Manesar Factory','Manesar, Haryana','Haryana','Manesar','','ENABLED','2026-03-02 17:49:35.284');
+/*!40000 ALTER TABLE `Location` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -824,7 +915,7 @@ CREATE TABLE `User` (
   `role` enum('USER','ADMIN','SUPER_ADMIN') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USER',
   PRIMARY KEY (`id`),
   UNIQUE KEY `User_email_key` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,7 +924,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES (1,'seichoapplication@gmail.com','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Admin User','2025-12-30 07:26:59.087','ADMIN'),(2,'user@rosenberger.com','$2b$10$mGQKJj03XSkJs9JjdbhASerbuNfY0jg7NLzRvT1JfLB7jmPY1u1xC','Normal User','2026-01-02 10:46:57.880','USER'),(3,'admin@rosenberger.com','$2b$10$mGQKJj03XSkJs9JjdbhASerbuNfY0jg7NLzRvT1JfLB7jmPY1u1xC','Super Admin User','2026-01-02 10:48:08.915','ADMIN'),(4,'aman.kholker@rosenberger.in','$2b$10$fRs./HUwcOamIoGAvjL1AeNXGBTwSE/Qo/MaI0ygSVAbkycrXBRmy','Aman Kholker','2026-02-24 15:47:34.294','ADMIN'),(5,'pravit.naik@rosenberger.in','$2b$10$RK4hav1KkGO1i.wWrc6.Ke3m8UnV1F490EpBok88VcN1P53Ty2MGW','Pravit Naik','2026-02-24 15:48:04.551','USER');
+INSERT INTO `User` VALUES (1,'seichoapplication@gmail.com','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Admin User','2025-12-30 07:26:59.087','ADMIN'),(2,'user@rosenberger.com','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Normal User','2026-01-02 10:46:57.880','USER'),(3,'admin@rosenberger.com','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Super Admin User','2026-01-02 10:48:08.915','ADMIN'),(4,'aman.kholker@rosenberger.in','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Aman Kholker','2026-02-24 15:47:34.294','ADMIN'),(5,'pravit.naik@rosenberger.in','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Pravit Naik','2026-02-24 15:48:04.551','USER'),(6,'nihal.borkar@rosenberger.in','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Nihal Borkar','2026-02-27 16:03:51.581','USER'),(7,'prachi.pednekar@rosenberger.in','$2b$10$F0lFFKQ6aBrMaSLAZ94zKuJJlIcDO0Uy57H/p4rT/9DmSgbvvuuS.','Prachi Pednekar','2026-02-27 16:04:44.878','USER');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -904,20 +995,21 @@ CREATE TABLE `Zone` (
   `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `originalUserGroupId` int DEFAULT NULL,
   `areaId` int DEFAULT NULL,
-  `description` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `leaderId` int DEFAULT NULL,
-  `location` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('ENABLED','DISABLED') COLLATE utf8mb4_unicode_ci DEFAULT 'ENABLED',
+  `locationId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Zone_auditId_idx` (`auditId`),
   KEY `Zone_originalUserGroupId_fkey` (`originalUserGroupId`),
   KEY `Zone_areaId_idx` (`areaId`),
   KEY `Zone_leaderId_fkey` (`leaderId`),
+  KEY `Zone_locationId_fkey` (`locationId`),
   CONSTRAINT `Zone_areaId_fkey` FOREIGN KEY (`areaId`) REFERENCES `Area` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Zone_auditId_fkey` FOREIGN KEY (`auditId`) REFERENCES `Audit` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Zone_leaderId_fkey` FOREIGN KEY (`leaderId`) REFERENCES `User` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Zone_locationId_fkey` FOREIGN KEY (`locationId`) REFERENCES `Location` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Zone_originalUserGroupId_fkey` FOREIGN KEY (`originalUserGroupId`) REFERENCES `UserGroup` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -926,7 +1018,7 @@ CREATE TABLE `Zone` (
 
 LOCK TABLES `Zone` WRITE;
 /*!40000 ALTER TABLE `Zone` DISABLE KEYS */;
-INSERT INTO `Zone` VALUES (51,8,'Zone 1','2026-01-01 19:43:42.283',NULL,NULL,'',NULL,'','ENABLED'),(52,8,'Zone 2','2026-01-02 06:56:29.569',NULL,NULL,'',NULL,'','ENABLED'),(53,8,'Zone 3','2026-01-02 11:16:44.615',NULL,NULL,'',NULL,'','ENABLED'),(54,9,'Zone 4','2026-01-02 11:18:16.033',NULL,NULL,'',NULL,'','ENABLED'),(55,9,'Zone 5','2026-01-02 11:18:16.055',NULL,NULL,'',NULL,'','ENABLED'),(56,9,'Zone 6','2026-01-02 11:18:16.058',NULL,NULL,'',NULL,'','ENABLED');
+INSERT INTO `Zone` VALUES (51,8,'Zone 1','2026-01-01 19:43:42.283',NULL,NULL,NULL,'ENABLED',NULL),(52,8,'Zone 2','2026-01-02 06:56:29.569',NULL,NULL,NULL,'ENABLED',NULL),(53,8,'Zone 3','2026-01-02 11:16:44.615',NULL,NULL,NULL,'ENABLED',NULL),(54,9,'Zone 4','2026-01-02 11:18:16.033',NULL,NULL,NULL,'ENABLED',NULL),(55,9,'Zone 5','2026-01-02 11:18:16.055',NULL,NULL,NULL,'ENABLED',NULL),(56,9,'Zone 6','2026-01-02 11:18:16.058',NULL,NULL,NULL,'ENABLED',NULL),(57,NULL,'Zone 6','2026-03-04 08:49:13.551',NULL,NULL,NULL,'ENABLED',NULL),(58,NULL,'Zone 4','2026-03-04 08:49:13.582',NULL,NULL,NULL,'ENABLED',NULL);
 /*!40000 ALTER TABLE `Zone` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -939,4 +1031,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-25 15:50:33
+-- Dump completed on 2026-03-06 16:27:43
