@@ -13,8 +13,8 @@
  * - Sending as a user requires the app to have proper application permissions and the sender user must exist.
  */
 
-const argv = require('node:process').argv.slice(2);
-const args = {};
+var argv = process.argv.slice(2);
+var args = {};
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a.startsWith('--')) {
