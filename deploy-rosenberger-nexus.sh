@@ -109,6 +109,14 @@ else
     error_exit "Failed to save PM2 configuration"
 fi
 
+# Step 11: Copy factory layout PDF
+info_msg "Step 11: Copying factory-layout.pdf to public/uploads..."
+if cp factory-layout.pdf public/uploads/; then
+    success_msg "factory-layout.pdf copied successfully"
+else
+    error_exit "Failed to copy factory-layout.pdf to public/uploads/"
+fi
+
 echo "=========================================="
 echo -e "${GREEN}✓ Deployment completed successfully!${NC}"
 echo "=========================================="
