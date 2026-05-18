@@ -45,56 +45,64 @@ else
     error_exit "Failed to generate Prisma client"
 fi
 
-# Step 3: Push database changes
-info_msg "Step 3: Pushing database schema changes..."
+# Step 3: Install dependencies
+info_msg "Step 3: Installing npm dependencies..."
+if npm install; then
+    success_msg "npm dependencies installed successfully"
+else
+    error_exit "Failed to install npm dependencies"
+fi
+
+# Step 4: Push database changes
+info_msg "Step 4: Pushing database schema changes..."
 if npx -y prisma db push --skip-generate; then
     success_msg "Database schema pushed successfully"
 else
     error_exit "Failed to push database schema changes"
 fi
 
-# Step 4: Configure firewall
-info_msg "Step 4: Configuring firewall for port 9002..."
+# Step 5: Configure firewall
+info_msg "Step 5: Configuring firewall for port 9002..."
 if echo "rosenberger" | sudo -S iptables -I INPUT -p tcp --dport 9002 -j ACCEPT; then
     success_msg "Firewall rule added successfully"
 else
     error_exit "Failed to configure firewall rule"
 fi
 
-# Step 5: Delete existing PM2 process
-info_msg "Step 5: Cleaning up existing PM2 process..."
+# Step 6: Delete existing PM2 process
+info_msg "Step 6: Cleaning up existing PM2 process..."
 if pm2 delete rosenberger-nexus 2>/dev/null || true; then
     success_msg "Existing process cleaned up"
 else
     info_msg "No existing process found (this is normal)"
 fi
 
-# Step 6: Flush PM2
-info_msg "Step 6: Flushing PM2..."
+# Step 7: Flush PM2
+info_msg "Step 7: Flushing PM2..."
 if pm2 flush; then
     success_msg "PM2 flushed successfully"
 else
     error_exit "Failed to flush PM2"
 fi
 
-# Step 7: Reload logs
-info_msg "Step 7: Reloading PM2 logs..."
+# Step 8: Reload logs
+info_msg "Step 8: Reloading PM2 logs..."
 if pm2 reloadLogs; then
     success_msg "PM2 logs reloaded successfully"
 else
     error_exit "Failed to reload PM2 logs"
 fi
 
-# Step 8: Start application
-info_msg "Step 8: Starting Rosenberger Nexus application..."
+# Step 9: Start application
+info_msg "Step 9: Starting Rosenberger Nexus application..."
 if pm2 start ecosystem.config.js --env production; then
     success_msg "Application started successfully"
 else
     error_exit "Failed to start application"
 fi
 
-# Step 9: Save PM2 configuration
-info_msg "Step 9: Saving PM2 configuration..."
+# Step 10: Save PM2 configuration
+info_msg "Step 10: Saving PM2 configuration..."
 if pm2 save; then
     success_msg "PM2 configuration saved successfully"
 else
