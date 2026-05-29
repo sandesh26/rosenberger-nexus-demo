@@ -69,13 +69,11 @@ else
     error_exit "Failed to configure firewall rule"
 fi
 
-# Step 6: Delete existing PM2 process
-info_msg "Step 6: Cleaning up existing PM2 process..."
-if pm2 delete rosenberger-nexus 2>/dev/null || true; then
-    success_msg "Existing process cleaned up"
-else
-    info_msg "No existing process found (this is normal)"
-fi
+# Step 6: Delete existing PM2 processes for this app bundle
+info_msg "Step 6: Cleaning up existing PM2 processes..."
+pm2 delete rosenberger-nexus 2>/dev/null || true
+pm2 delete audit-cron 2>/dev/null || true
+success_msg "Existing PM2 processes cleaned up"
 
 # Step 7: Flush PM2
 info_msg "Step 7: Flushing PM2..."
@@ -93,10 +91,10 @@ else
     error_exit "Failed to reload PM2 logs"
 fi
 
-# Step 9: Start application
-info_msg "Step 9: Starting Rosenberger Nexus application..."
+# Step 9: Start application + cron worker
+info_msg "Step 9: Starting Rosenberger Nexus web + cron processes..."
 if pm2 start ecosystem.config.js --env production; then
-    success_msg "Application started successfully"
+    success_msg "Application and cron worker started successfully"
 else
     error_exit "Failed to start application"
 fi
