@@ -12,17 +12,17 @@ module.exports = {
       autorestart: true,
       watch: false
     },
-    {
-      name: 'audit-cron',
-      // Dedicated worker that initializes DB-backed schedules
-      cwd: require('path').resolve(__dirname, '../../'),
-      script: 'npm',
-      args: 'run start:cron',
-      env: {
-        NODE_ENV: 'production'
-      },
-      autorestart: true,
-      watch: false
-    },
+    // {
+    //   name: 'audit-cron',
+    //   // Dedicated worker that initializes DB-backed schedules
+    //   cwd: require('path').resolve(__dirname, '../../'),
+    //   script: 'npm',
+    //   args: 'run start:cron',
+    //   env: {
+    //     NODE_ENV: 'production'
+    //   },
+    //   autorestart: true,
+    //   watch: false
+    // },
   ]
 }
