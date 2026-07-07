@@ -5,7 +5,7 @@ module.exports = {
     {
       name: 'rosenberger-nexus',
       // Run PM2 from repository root, not scripts/deploy
-      cwd: require('path').resolve(__dirname, '../../'),
+      cwd: __dirname,
       script: 'npm',
       args: 'run start',
       env: { NODE_ENV: 'production' },
